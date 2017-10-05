@@ -1,0 +1,35 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: locust-worker
+  namespace: locust
+  labels:
+    name: locust
+    role: worker
+spec:
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        name: locust
+        role: worker
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: nodetype
+                operator: In
+                values:
+                - client
+      containers:
+        - name: locust
+          image: unicell/locust:latest
+          env:
+            - name: LOCUST_MODE
+              value: worker
+            - name: LOCUST_MASTER
+              value: locust-master
+            - name: TARGET_HOST
+              value: http://172.20.2.110
