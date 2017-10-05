@@ -2,7 +2,7 @@ FROM python:2.7-alpine
 
 RUN true \
     && apk update \
-    && apk --no-cache add ca-certificates gcc g++ musl-dev curl \
+    && apk --no-cache add ca-certificates tini gcc g++ musl-dev curl \
     && rm -rf "/tmp/*" "/root/.cache" `find / -regex '.*\.py[co]'`
 
 RUN true \
@@ -17,4 +17,5 @@ RUN test -f requirements.txt && pip install -r requirements.txt; exit 0
 EXPOSE 5557 5558 8089
 
 # Start Locust using LOCUS_OPTS environment variable
-ENTRYPOINT ["/locust/run.sh"] 
+ENTRYPOINT ["/sbin/tini", "--"]
+CMD ["/locust/run.sh"]
