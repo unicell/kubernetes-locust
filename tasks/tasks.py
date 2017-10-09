@@ -27,9 +27,15 @@ class MetricsTaskSet(TaskSet):
     def on_start(self):
         self._deviceid = str(uuid.uuid4())
 
-    @task(1)
+    @task(50)
     def index(self):
         self.client.get('/')
+        self.client.close()
+
+    @task(50)
+    def post(self):
+        self.client.post('/', {"file": self._deviceid, "delay": 3})
+        self.client.close()
 
 
 class MetricsLocust(HttpLocust):
